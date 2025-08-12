@@ -1,3 +1,5 @@
+import { headerEvents } from "@widgets/AppHeader/model/events";
+
 export class App extends HTMLElement {
   constructor() {
     super();
@@ -5,11 +7,22 @@ export class App extends HTMLElement {
 
   connectedCallback() {
     this.innerHTML = this.render();
+    this.addEventListener(headerEvents.CREATE_CLICK, (e) => {
+      console.log(headerEvents.CREATE_CLICK);
+    });
+    this.addEventListener(headerEvents.SAVE_CLICK, (e) => {
+      console.log(headerEvents.SAVE_CLICK);
+    });
+    this.addEventListener(headerEvents.CLEAR_CLICK, (e) => {
+      console.log(headerEvents.CLEAR_CLICK);
+    });
   }
 
   render() {
     return `
-    <main>    </main>`;
+    <app-header></app-header>
+    <main>    
+    </main>`;
   }
 }
 
