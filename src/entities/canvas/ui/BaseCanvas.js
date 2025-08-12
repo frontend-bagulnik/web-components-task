@@ -29,12 +29,25 @@ export class BaseCanvas extends HTMLElement {
   }
 
   render() {
-    const width = window.innerWidth - 80;
-    const height = window.innerWidth - 64 - 70 - 150;
+    const headerHeight = 74;
+    const verticalPadding = 64;
+    const horizontalPadding = 80;
+    const gap = 16;
+    const bufferContainerHeight = 150;
+
+    //вынести в отдельный модуль
+    const width = window.innerWidth - horizontalPadding;
+    const height =
+      window.innerHeight -
+      verticalPadding -
+      gap -
+      headerHeight -
+      bufferContainerHeight;
 
     return `
         <style>
             canvas {
+                flex: 1
                 border-radius: 10px;
                 user-select: none;
             }
