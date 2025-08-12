@@ -20,9 +20,11 @@ export class App extends HTMLElement {
 
   render() {
     return `
-    <app-header></app-header>
-    <main>    
-    </main>`;
+      <app-header></app-header>
+      <default-main-layout>
+          <buffer-container></buffer-container>    
+      </default-main-layout>
+    `;
   }
 }
 
