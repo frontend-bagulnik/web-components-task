@@ -1,5 +1,7 @@
 import { BaseCanvas } from "./BaseCanvas";
 import { getSceneElements } from "@entities/scene/lib/scene";
+import { publishEvent } from "@shared/lib/eventBus";
+import { canvasEvents } from "@shared/model/canvasEvents";
 
 class ControlledCanvas extends BaseCanvas {
   constructor() {
@@ -26,6 +28,7 @@ class ControlledCanvas extends BaseCanvas {
     this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
     this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
     this.canvas.addEventListener("mouseout", this.onMouseUp.bind(this));
+    this.canvas.addEventListener("wheel", this.onMouseWheel.bind(this));
   }
 
   onMouseDown({ clientX, clientY }) {
@@ -50,11 +53,38 @@ class ControlledCanvas extends BaseCanvas {
     this.canvas.removeEventListener("mousemove", this.mouseMoveListener, false);
   }
 
+  onMouseWheel(event) {
+    event.preventDefault();
+    const { clientX, clientY, deltaY } = event;
+    const { x: oldX, y: oldY, scale: oldScale } = this.viewportTransform;
+
+    const invertedDelta = deltaY * -0.01;
+    const newScale = oldScale + invertedDelta;
+
+    if (newScale <= 0) {
+      return;
+    }
+
+    const updatePosition = (oldValue, newValue) =>
+      newValue - (newValue - oldValue) * (newScale / oldScale);
+
+    this.viewportTransform.x = updatePosition(oldX, clientX);
+    this.viewportTransform.y = updatePosition(oldY, clientY);
+    this.viewportTransform.scale = newScale;
+
+    publishEvent(
+      invertedDelta > 0 ? canvasEvents.ZOOM_IN : canvasEvents.ZOOM_OUT,
+    );
+
+    this.renderScene();
+  }
+
   applyTransform() {
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     const { scale, x, y } = this.viewportTransform;
+    console.log(this.viewportTransform)
     this.ctx.setTransform(scale, 0, 0, scale, x, y);
   }
 
