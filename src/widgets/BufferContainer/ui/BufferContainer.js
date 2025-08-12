@@ -1,6 +1,10 @@
-class BufferContainer extends HTMLElement {
+import { polygonOptions } from "@entities/polygon/model/constants";
+import { BaseBufferContainer } from "./BaseBufferContainer";
+
+class BufferContainer extends BaseBufferContainer {
   connectedCallback() {
     this.innerHTML = this.render();
+    this.container = this.querySelector("div");
   }
 
   render() {
@@ -10,7 +14,7 @@ class BufferContainer extends HTMLElement {
                 background-color: var(--white);
                 border-radius: 10px;
                 display: grid;
-                grid-template-columns: repeat(auto-fill, ${25}px);
+                grid-template-columns: repeat(auto-fill, ${polygonOptions.svgPolygonWidth}px);
                 min-height: 150px;
                 border: 3px solid transparent;
             }

@@ -2,6 +2,7 @@ import { BaseCanvas } from "./BaseCanvas";
 import { getSceneElements } from "@entities/scene/lib/scene";
 import { publishEvent } from "@shared/lib/eventBus";
 import { canvasEvents } from "@shared/model/canvasEvents";
+import { subscribe } from "@shared/lib/eventBus";
 
 class ControlledCanvas extends BaseCanvas {
   constructor() {
@@ -29,6 +30,7 @@ class ControlledCanvas extends BaseCanvas {
     this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
     this.canvas.addEventListener("mouseout", this.onMouseUp.bind(this));
     this.canvas.addEventListener("wheel", this.onMouseWheel.bind(this));
+    subscribe(canvasEvents.RENDER_SCENE, this.renderScene.bind(this));
   }
 
   onMouseDown({ clientX, clientY }) {
@@ -84,7 +86,6 @@ class ControlledCanvas extends BaseCanvas {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     const { scale, x, y } = this.viewportTransform;
-    console.log(this.viewportTransform)
     this.ctx.setTransform(scale, 0, 0, scale, x, y);
   }
 
