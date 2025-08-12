@@ -1,0 +1,53 @@
+html {
+  scroll-behavior: smooth;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  outline: none;
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeSpeed;
+  font-weight: 400;
+  line-height: 22px;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+iframe,
+button {
+  border: 0;
+}
+
+table {
+  border-spacing: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+figure {
+  margin: 0;
+}
+
+ul {
+  list-style-type: none;
+}
+
+p {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 28px;
+}
