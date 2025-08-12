@@ -11,7 +11,7 @@ class DefaultMainLayout extends HTMLElement {
                 padding: 32px 40px;
                 display: flex;
                 flex-direction: column;
-                gap: 16px;                
+                gap: 16px;  
             }
         </style>
         
