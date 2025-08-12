@@ -2,7 +2,7 @@ import { BaseSceneElement } from "@shared/model/BaseSceneElement";
 import { subscribe } from "@shared/lib/eventBus";
 import { canvasEvents } from "@shared/model/canvasEvents";
 
-class Grid extends BaseSceneElement {
+export class Grid extends BaseSceneElement {
   constructor({
     id,
     lineWidth = 1,
