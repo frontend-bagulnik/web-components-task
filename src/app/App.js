@@ -23,6 +23,7 @@ export class App extends HTMLElement {
       <app-header></app-header>
       <default-main-layout>
           <buffer-container></buffer-container>    
+          <controlled-canvas></controlled-canvas>    
       </default-main-layout>
     `;
   }
