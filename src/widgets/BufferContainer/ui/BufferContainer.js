@@ -47,7 +47,9 @@ class BufferContainer extends BaseBufferContainer {
 
   connectedCallback() {
     this.innerHTML = this.render();
-    this.container = this.querySelector("div");
+    this.container = this.querySelector(".container");
+    this.polygonContainer = this.querySelector(".polygonContainer");
+    this.placeholder = this.querySelector("buffer-empty-placeholder");
     this.initListeners();
   }
 
@@ -63,18 +65,24 @@ class BufferContainer extends BaseBufferContainer {
             .container {
                 background-color: var(--white);
                 border-radius: 10px;
-                display: grid;
-                grid-template-columns: repeat(auto-fill, ${polygonOptions.svgPolygonWidth}px);
-                min-height: 150px;
+                height: 150px;
                 border: 3px solid transparent;
             }
 
             .dropZone {
                 border: 3px solid var(--gray10);
             }
+            
+            .polygonContainer {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, ${polygonOptions.svgPolygonWidth}px);
+            }
         </style>
         
-        <div class="container"></div>    
+        <div class="container">
+            <div class="polygonContainer"></div>
+            <buffer-empty-placeholder visible="true"></buffer-empty-placeholder>
+        </div>    
     `;
   }
 }
