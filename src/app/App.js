@@ -5,6 +5,8 @@ import { createRandomSvgPolygonData } from "../features/polygon/create";
 import { onPolygonDropped } from "@features/canvas/dropPolygon";
 import { useBufferPolygons } from "./lib/hooks";
 import { canvasDomEvents } from "@entities/canvas/model/domEvents";
+import { subscribe } from "@shared/lib/eventBus";
+import { canvasEvents } from "@shared/model/canvasEvents";
 
 const { getBufferPolygons, setBufferPolygons, removePolygonFromBuffer } =
   useBufferPolygons();
@@ -34,6 +36,20 @@ export class App extends HTMLElement {
     this.updateBuffer();
   }
 
+  onPolygonOutOfCanvas({ id }) {
+    this.style.cursor = "grab";
+    this.bufferContainer.setIsExpectingElement(id);
+  }
+
+  onMouseUp() {
+    if (!this.bufferContainer.isExpectingElement) {
+      return;
+    }
+
+    this.bufferContainer.cancelExpectingElement();
+    this.style.cursor = "default";
+  }
+
   updateBuffer() {
     this.bufferContainer.setAttribute(
       "polygons",
@@ -55,6 +71,12 @@ export class App extends HTMLElement {
     this.addEventListener(
       canvasDomEvents.DROP_ELEMENT,
       this.onPolygonDroppedOnCanvas.bind(this),
+    );
+    this.addEventListener("mouseup", this.onMouseUp.bind(this));
+
+    subscribe(
+      canvasEvents.MOVED_ELEMENT_OUTSIDE,
+      this.onPolygonOutOfCanvas.bind(this),
     );
   }
 

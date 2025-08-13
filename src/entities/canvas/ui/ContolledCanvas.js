@@ -35,7 +35,7 @@ export class ControlledCanvas extends BaseCanvas {
   initListeners() {
     this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
     this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
-    this.canvas.addEventListener("mouseout", this.onMouseUp.bind(this));
+    this.canvas.addEventListener("mouseout", this.onMouseOut.bind(this));
     this.canvas.addEventListener("wheel", this.onMouseWheel.bind(this));
     subscribe(canvasEvents.RENDER_SCENE, this.renderScene.bind(this));
     subscribe(
@@ -83,6 +83,16 @@ export class ControlledCanvas extends BaseCanvas {
   onMouseUp() {
     this.canvas.removeEventListener("mousemove", this.mouseMoveListener, false);
     this.resetControls();
+  }
+
+  onMouseOut() {
+    if (this.movingElementId) {
+      publishEvent(canvasEvents.MOVED_ELEMENT_OUTSIDE, {
+        id: this.movingElementId,
+      });
+    }
+
+    this.onMouseUp();
   }
 
   onMouseWheel(event) {
