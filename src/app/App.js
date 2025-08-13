@@ -2,12 +2,17 @@ import { headerEvents } from "@widgets/AppHeader/model/events";
 import { addSceneElement } from "@entities/scene/lib/scene";
 import { Grid } from "@entities/grid/model/Grid";
 import { createRandomSvgPolygonData } from "../features/polygon/create";
+import { onPolygonDropped } from "../features/canvas/dropPolygon";
+import { useBufferPolygons } from "./lib/hooks";
+import { canvasDomEvents } from "../entities/canvas/model/domEvents";
+
+const { getBufferPolygons, setBufferPolygons, removePolygonFromBuffer } =
+  useBufferPolygons();
 
 export class App extends HTMLElement {
   constructor() {
     super();
 
-    this.bufferPolygons = [];
     this.bufferContainer = null;
   }
 
@@ -23,18 +28,23 @@ export class App extends HTMLElement {
     addSceneElement(grid);
   }
 
+  onPolygonDroppedOnCanvas({ detail }) {
+    onPolygonDropped(detail, getBufferPolygons());
+    removePolygonFromBuffer(detail.elementId);
+    this.updateBuffer();
+  }
+
   updateBuffer() {
     this.bufferContainer.setAttribute(
       "polygons",
-      JSON.stringify(this.bufferPolygons),
+      JSON.stringify(getBufferPolygons()),
     );
   }
 
   initListeners() {
     this.addEventListener(headerEvents.CREATE_CLICK, (e) => {
-      this.bufferPolygons = createRandomSvgPolygonData();
+      setBufferPolygons(createRandomSvgPolygonData());
       this.updateBuffer();
-      console.log(headerEvents.CREATE_CLICK, this.bufferPolygons);
     });
     this.addEventListener(headerEvents.SAVE_CLICK, (e) => {
       console.log(headerEvents.SAVE_CLICK);
@@ -42,6 +52,10 @@ export class App extends HTMLElement {
     this.addEventListener(headerEvents.CLEAR_CLICK, (e) => {
       console.log(headerEvents.CLEAR_CLICK);
     });
+    this.addEventListener(
+      canvasDomEvents.DROP_ELEMENT,
+      this.onPolygonDroppedOnCanvas.bind(this),
+    );
   }
 
   render() {

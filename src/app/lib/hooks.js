@@ -1,0 +1,19 @@
+export const useBufferPolygons = () => {
+  const buffer = {
+    polygons: [],
+  };
+
+  const setBufferPolygons = (newPolygons) => (buffer.polygons = newPolygons);
+
+  const getBufferPolygons = () => [...buffer.polygons];
+
+  const removePolygonFromBuffer = (polygonId) => {
+    buffer.polygons = buffer.polygons.filter(({ id }) => id !== polygonId);
+  };
+
+  return {
+    getBufferPolygons,
+    setBufferPolygons,
+    removePolygonFromBuffer,
+  };
+};
