@@ -4,7 +4,7 @@ import { publishEvent } from "@shared/lib/eventBus";
 import { canvasEvents } from "@shared/model/canvasEvents";
 import { subscribe } from "@shared/lib/eventBus";
 
-class ControlledCanvas extends BaseCanvas {
+export class ControlledCanvas extends BaseCanvas {
   constructor() {
     super();
     this.viewportTransform = {

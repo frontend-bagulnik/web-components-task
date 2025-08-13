@@ -1,1 +1,1 @@
-import "./ContolledCanvas";
+import "./DroppableCanvas";
