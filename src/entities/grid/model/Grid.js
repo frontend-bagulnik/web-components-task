@@ -1,7 +1,7 @@
 import { BaseSceneElement } from "@shared/model/BaseSceneElement";
 import { subscribe } from "@shared/lib/eventBus";
 import { canvasEvents } from "@shared/model/canvasEvents";
-import { componentTypes } from "../../../shared/model/componentTypes";
+import { componentTypes } from "@shared/model/componentTypes";
 
 export class Grid extends BaseSceneElement {
   constructor({
@@ -46,21 +46,51 @@ export class Grid extends BaseSceneElement {
     this.drawHorizontalLines(ctx);
   }
 
+  drawVerticalLine(ctx, startX, startY, endX, endY, text) {
+    const { offset: measureOffset } = this.measureOptions;
+
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
+
+    if (text) {
+      this.drawMeasureText(ctx, startX, endY + measureOffset, text);
+    }
+    ctx.stroke();
+  }
+
   drawVerticalLines(ctx) {
     const { cellWidth, offset } = this.options;
-    const { offset: measureOffset } = this.measureOptions;
 
     const maxHeight = ctx.canvas.height - offset;
     const maxWidth = ctx.canvas.width - offset;
 
     for (let i = offset; i <= maxWidth; i += cellWidth) {
-      ctx.beginPath();
-      ctx.moveTo(i, offset);
-      ctx.lineTo(i, maxHeight);
-
-      this.drawMeasureText(ctx, i, maxHeight + measureOffset, `${i - offset}`);
-      ctx.stroke();
+      this.drawVerticalLine(ctx, i, offset, i, maxHeight, `${i - offset}`);
     }
+
+    this.drawVerticalLine(ctx, maxWidth, offset, maxWidth, maxHeight);
+
+    this.drawDefaultText(
+      ctx,
+      `${maxWidth - offset}`,
+      maxWidth,
+      maxHeight + this.measureOptions.offset,
+    );
+  }
+
+  drawHorizontalLine(ctx, startX, startY, endX, endY, text) {
+    const { offset: measureOffset } = this.measureOptions;
+
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
+
+    if (text) {
+      this.drawMeasureText(ctx, startX - measureOffset, endY, text, true);
+    }
+
+    ctx.stroke();
   }
 
   drawHorizontalLines(ctx) {
@@ -70,30 +100,25 @@ export class Grid extends BaseSceneElement {
     const maxHeight = ctx.canvas.height - offset;
     const maxWidth = ctx.canvas.width - offset;
 
-    for (let i = offset; i <= maxHeight; i += cellHeight) {
-      ctx.beginPath();
-      ctx.moveTo(offset, i);
-      ctx.lineTo(maxWidth, i);
-
-      this.drawMeasureText(
-        ctx,
-        offset - measureOffset,
-        i,
-        `${maxHeight - i}`,
-        true,
-      );
-      ctx.stroke();
+    for (let i = offset; i < maxHeight; i += cellHeight) {
+      this.drawHorizontalLine(ctx, offset, i, maxWidth, i, `${maxHeight - i}`);
     }
+
+    this.drawHorizontalLine(ctx, offset, maxHeight, maxWidth, maxHeight, "0");
   }
 
   drawMeasureText(ctx, x, y, text, isHorizontalAlign = false) {
     const { fontSize } = this.measureOptions;
-
-    ctx.font = `${fontSize}px serif`;
     const { width } = ctx.measureText(text);
 
     const xPosition = isHorizontalAlign ? x : x - width / 2;
     const yPosition = isHorizontalAlign ? y + fontSize / 2 : y;
-    ctx.strokeText(text, xPosition, yPosition);
+    this.drawDefaultText(ctx, text, xPosition, yPosition);
+  }
+
+  drawDefaultText(ctx, text, x, y) {
+    const { fontSize } = this.measureOptions;
+    ctx.font = `${fontSize}px serif`;
+    ctx.strokeText(text, x, y);
   }
 }

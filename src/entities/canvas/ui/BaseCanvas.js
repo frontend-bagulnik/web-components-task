@@ -1,3 +1,5 @@
+import { getCanvasSize } from "../lib/canvasSize";
+
 export class BaseCanvas extends HTMLElement {
   constructor() {
     super();
@@ -29,20 +31,7 @@ export class BaseCanvas extends HTMLElement {
   }
 
   render() {
-    const headerHeight = 74;
-    const verticalPadding = 64;
-    const horizontalPadding = 80;
-    const gap = 16;
-    const bufferContainerHeight = 150;
-
-    //вынести в отдельный модуль
-    const width = window.innerWidth - horizontalPadding;
-    const height =
-      window.innerHeight -
-      verticalPadding -
-      gap -
-      headerHeight -
-      bufferContainerHeight;
+    const { width, height } = getCanvasSize();
 
     return `
         <style>

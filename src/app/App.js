@@ -7,7 +7,7 @@ import {
 import { onPolygonDropped } from "@features/canvas/dropPolygon";
 import { useBufferPolygons } from "./lib/hooks/useBufferPolygons";
 import { canvasDomEvents } from "@entities/canvas/model/domEvents";
-import { subscribe } from "@shared/lib/eventBus";
+import { subscribe, publishEvent } from "@shared/lib/eventBus";
 import { canvasEvents } from "@shared/model/canvasEvents";
 import { bufferContainerEvents } from "@widgets/BufferContainer/model/events";
 import {
@@ -15,11 +15,11 @@ import {
   removeSceneElement,
   getSceneElements,
   addSceneElement,
+  clearScene,
 } from "@entities/scene/lib/scene";
-import { publishEvent } from "@shared/lib/eventBus";
 import { useAppStorage } from "./lib/hooks/useAppStorage";
 import { loadSceneComponents } from "./lib/sceneLoader";
-import { componentTypes } from "../shared/model/componentTypes";
+import { componentTypes } from "@shared/model/componentTypes";
 
 const {
   getBufferPolygons,
@@ -114,7 +114,13 @@ export class App extends HTMLElement {
       ),
     );
 
-    this.addEventListener(headerEvents.CLEAR_CLICK, clearAppData);
+    this.addEventListener(headerEvents.CLEAR_CLICK, () => {
+      setBufferPolygons([]);
+      clearScene();
+      clearAppData();
+      this.updateBuffer();
+      publishEvent(canvasEvents.RENDER_SCENE);
+    });
 
     this.addEventListener(
       canvasDomEvents.DROP_ELEMENT,

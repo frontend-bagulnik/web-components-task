@@ -6,6 +6,7 @@ export const {
   removeSceneElement,
   getSceneElements,
   getSceneElementById,
+  clearScene,
 } = useScene();
 
 useSceneListeners();
