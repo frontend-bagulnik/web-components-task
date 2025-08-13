@@ -1,5 +1,6 @@
 import { BaseSceneElement } from "@shared/model/BaseSceneElement";
 import { polygonOptions } from "./constants";
+import { componentTypes } from "../../../shared/model/componentTypes";
 
 export class Polygon extends BaseSceneElement {
   constructor({
@@ -10,7 +11,7 @@ export class Polygon extends BaseSceneElement {
     borderColor = polygonOptions.borderColor,
     borderWidth = polygonOptions.borderWidth,
   }) {
-    super(id);
+    super(componentTypes.POLYGON, id);
     this.position = position;
     this.points = points;
     this.options = { color, borderColor, borderWidth };

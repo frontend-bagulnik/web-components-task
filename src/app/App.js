@@ -1,5 +1,4 @@
 import { headerEvents } from "@widgets/AppHeader/model/events";
-import { addSceneElement } from "@entities/scene/lib/scene";
 import { Grid } from "@entities/grid/model/Grid";
 import {
   createRandomSvgPolygonData,
@@ -11,10 +10,16 @@ import { canvasDomEvents } from "@entities/canvas/model/domEvents";
 import { subscribe } from "@shared/lib/eventBus";
 import { canvasEvents } from "@shared/model/canvasEvents";
 import { bufferContainerEvents } from "@widgets/BufferContainer/model/events";
-import { getSceneElementById } from "@entities/scene/lib/scene";
-import { removeSceneElement } from "@entities/scene/lib/scene";
+import {
+  getSceneElementById,
+  removeSceneElement,
+  getSceneElements,
+  addSceneElement,
+} from "@entities/scene/lib/scene";
 import { publishEvent } from "@shared/lib/eventBus";
 import { useAppStorage } from "./lib/hooks/useAppStorage";
+import { loadSceneComponents } from "./lib/sceneLoader";
+import { componentTypes } from "../shared/model/componentTypes";
 
 const {
   getBufferPolygons,
@@ -33,7 +38,6 @@ export class App extends HTMLElement {
   }
 
   connectedCallback() {
-    console.log("app mounted");
     this.innerHTML = this.render();
     this.initListeners();
     this.bufferContainer = this.querySelector("buffer-container");
@@ -43,14 +47,16 @@ export class App extends HTMLElement {
     });
 
     addSceneElement(grid);
-    const { bufferPolygons } = loadAppData();
+    const { bufferPolygons, scenePolygons } = loadAppData();
 
-    if (!bufferPolygons) {
-      return;
+    if (bufferPolygons) {
+      setBufferPolygons(bufferPolygons);
+      this.updateBuffer();
     }
 
-    setBufferPolygons(bufferPolygons);
-    this.updateBuffer();
+    if (scenePolygons) {
+      loadSceneComponents(scenePolygons);
+    }
   }
 
   onPolygonDroppedOnCanvas({ detail }) {
@@ -102,7 +108,10 @@ export class App extends HTMLElement {
     });
 
     this.addEventListener(headerEvents.SAVE_CLICK, () =>
-      saveAppData(getBufferPolygons()),
+      saveAppData(
+        getBufferPolygons(),
+        getSceneElements().filter((el) => el.getType() !== componentTypes.GRID),
+      ),
     );
 
     this.addEventListener(headerEvents.CLEAR_CLICK, clearAppData);

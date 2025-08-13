@@ -8,27 +8,31 @@ export const useAppStorage = () => {
     const parseLoadedData = (data) => JSON.parse(data);
     const load = (key) => window.localStorage.getItem(key);
 
-    const { bufferContainerData } = appStorageKey;
+    const { bufferContainerData, canvasData } = appStorageKey;
 
     return {
       bufferPolygons: parseLoadedData(load(bufferContainerData)),
+      scenePolygons: parseLoadedData(load(canvasData)),
     };
   };
 
-  const saveAppData = (bufferPolygons) => {
-    const { bufferContainerData } = appStorageKey;
-    window.localStorage.setItem(
-      bufferContainerData,
-      JSON.stringify(bufferPolygons),
-    );
+  const saveAppData = (bufferPolygons, scenePolygons) => {
+    const save = (key, data) =>
+      window.localStorage.setItem(key, JSON.stringify(data));
+
+    const { bufferContainerData, canvasData } = appStorageKey;
+
+    save(bufferContainerData, bufferPolygons);
+    save(canvasData, scenePolygons);
   };
 
   const clearAppData = () => {
     const clear = (key) => window.localStorage.removeItem(key);
 
-    const { bufferContainerData } = appStorageKey;
+    const { bufferContainerData, canvasData } = appStorageKey;
 
     clear(bufferContainerData);
+    clear(canvasData);
   };
 
   return {
