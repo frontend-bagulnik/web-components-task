@@ -1,3 +1,5 @@
+import { componentTypes } from "@shared/model/componentTypes";
+
 export const useScene = () => {
   const scene = {
     children: [],
@@ -7,6 +9,11 @@ export const useScene = () => {
 
   const removeSceneElement = (targetId) =>
     (scene.children = scene.children.filter((el) => targetId !== el.getId()));
+
+  const clearScene = () =>
+    (scene.children = scene.children.filter(
+      (el) => el.getType() === componentTypes.GRID,
+    ));
 
   const getSceneElements = () => [...scene.children];
 
@@ -18,5 +25,6 @@ export const useScene = () => {
     removeSceneElement,
     getSceneElements,
     getSceneElementById,
+    clearScene,
   };
 };
