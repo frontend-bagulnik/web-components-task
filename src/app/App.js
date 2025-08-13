@@ -6,7 +6,7 @@ import {
   createSvgPolygonData,
 } from "@features/polygon/create";
 import { onPolygonDropped } from "@features/canvas/dropPolygon";
-import { useBufferPolygons } from "./lib/hooks";
+import { useBufferPolygons } from "./lib/hooks/useBufferPolygons";
 import { canvasDomEvents } from "@entities/canvas/model/domEvents";
 import { subscribe } from "@shared/lib/eventBus";
 import { canvasEvents } from "@shared/model/canvasEvents";
@@ -14,6 +14,7 @@ import { bufferContainerEvents } from "@widgets/BufferContainer/model/events";
 import { getSceneElementById } from "@entities/scene/lib/scene";
 import { removeSceneElement } from "@entities/scene/lib/scene";
 import { publishEvent } from "@shared/lib/eventBus";
+import { useAppStorage } from "./lib/hooks/useAppStorage";
 
 const {
   getBufferPolygons,
@@ -21,6 +22,8 @@ const {
   addPolygonToBuffer,
   removePolygonFromBuffer,
 } = useBufferPolygons();
+
+const { loadAppData, saveAppData, clearAppData } = useAppStorage();
 
 export class App extends HTMLElement {
   constructor() {
@@ -30,6 +33,7 @@ export class App extends HTMLElement {
   }
 
   connectedCallback() {
+    console.log("app mounted");
     this.innerHTML = this.render();
     this.initListeners();
     this.bufferContainer = this.querySelector("buffer-container");
@@ -39,6 +43,14 @@ export class App extends HTMLElement {
     });
 
     addSceneElement(grid);
+    const { bufferPolygons } = loadAppData();
+
+    if (!bufferPolygons) {
+      return;
+    }
+
+    setBufferPolygons(bufferPolygons);
+    this.updateBuffer();
   }
 
   onPolygonDroppedOnCanvas({ detail }) {
@@ -88,12 +100,13 @@ export class App extends HTMLElement {
       setBufferPolygons(createRandomSvgPolygonData());
       this.updateBuffer();
     });
-    this.addEventListener(headerEvents.SAVE_CLICK, (e) => {
-      console.log(headerEvents.SAVE_CLICK);
-    });
-    this.addEventListener(headerEvents.CLEAR_CLICK, (e) => {
-      console.log(headerEvents.CLEAR_CLICK);
-    });
+
+    this.addEventListener(headerEvents.SAVE_CLICK, () =>
+      saveAppData(getBufferPolygons()),
+    );
+
+    this.addEventListener(headerEvents.CLEAR_CLICK, clearAppData);
+
     this.addEventListener(
       canvasDomEvents.DROP_ELEMENT,
       this.onPolygonDroppedOnCanvas.bind(this),
