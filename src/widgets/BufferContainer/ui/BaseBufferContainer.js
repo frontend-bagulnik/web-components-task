@@ -3,7 +3,8 @@ import { createPolygonSvgElement } from "@features/polygon/create";
 export class BaseBufferContainer extends HTMLElement {
   constructor() {
     super();
-    this.container = null;
+    this.polygonContainer = null;
+    this.placeholder = null;
   }
 
   get polygons() {
@@ -28,12 +29,12 @@ export class BaseBufferContainer extends HTMLElement {
   }
 
   clearBuffer() {
-    if (!this.container) {
+    if (!this.polygonContainer) {
       return;
     }
 
-    while (this.container.firstChild) {
-      this.container.removeChild(this.container.firstChild);
+    while (this.polygonContainer.firstChild) {
+      this.polygonContainer.removeChild(this.polygonContainer.firstChild);
     }
   }
 
@@ -46,12 +47,19 @@ export class BaseBufferContainer extends HTMLElement {
     const parsedPolygons = JSON.parse(this.polygons);
 
     if (!parsedPolygons) {
-      console.error("can't parse provided polygon data");
+      return;
+    }
+
+    if (!parsedPolygons.length) {
+      this.placeholder.setAttribute("visible", true);
+      return;
     }
 
     parsedPolygons.forEach((polygon) => {
       const svgElement = createPolygonSvgElement(polygon);
-      this.container.appendChild(svgElement);
+      this.polygonContainer.appendChild(svgElement);
     });
+
+    this.placeholder.setAttribute("visible", false);
   }
 }
