@@ -3,6 +3,8 @@ import { getSceneElements } from "@entities/scene/lib/scene";
 import { publishEvent } from "@shared/lib/eventBus";
 import { canvasEvents } from "@shared/model/canvasEvents";
 import { subscribe } from "@shared/lib/eventBus";
+import { mapScreenCoordinatesToCanvas } from "../lib/mappers/coordinates";
+import { sceneEvents } from "@entities/scene/model/events";
 
 export class ControlledCanvas extends BaseCanvas {
   constructor() {
@@ -16,7 +18,12 @@ export class ControlledCanvas extends BaseCanvas {
       x: 0,
       y: 0,
     };
+    this.controls = {
+      panning: true,
+      elementMovement: false,
+    };
     this.mouseMoveListener = null;
+    this.movingElementId = null;
   }
 
   connectedCallback() {
@@ -31,19 +38,41 @@ export class ControlledCanvas extends BaseCanvas {
     this.canvas.addEventListener("mouseout", this.onMouseUp.bind(this));
     this.canvas.addEventListener("wheel", this.onMouseWheel.bind(this));
     subscribe(canvasEvents.RENDER_SCENE, this.renderScene.bind(this));
+    subscribe(
+      sceneEvents.SELECTED_ELEMENT,
+      this.onSceneElementSelected.bind(this),
+    );
   }
 
   onMouseDown({ clientX, clientY }) {
     this.prevMousePosition.y = clientY;
     this.prevMousePosition.x = clientX;
 
+    const { canvasX, canvasY } = mapScreenCoordinatesToCanvas(
+      this.canvas,
+      { clientX, clientY },
+      this.viewportTransform,
+    );
+
+    publishEvent(canvasEvents.MOUSE_DOWN, { x: canvasX, y: canvasY });
+
     this.mouseMoveListener = this.onMouseMove.bind(this);
     this.canvas.addEventListener("mousemove", this.mouseMoveListener, false);
   }
 
   onMouseMove({ clientX, clientY }) {
-    this.viewportTransform.x += clientX - this.prevMousePosition.x;
-    this.viewportTransform.y += clientY - this.prevMousePosition.y;
+    if (this.controls.panning) {
+      this.viewportTransform.x += clientX - this.prevMousePosition.x;
+      this.viewportTransform.y += clientY - this.prevMousePosition.y;
+    }
+
+    if (this.movingElementId && this.controls.elementMovement) {
+      publishEvent(canvasEvents.MOVE_ELEMENT, {
+        id: this.movingElementId,
+        dx: clientX - this.prevMousePosition.x,
+        dy: clientY - this.prevMousePosition.y,
+      });
+    }
 
     this.prevMousePosition.x = clientX;
     this.prevMousePosition.y = clientY;
@@ -53,6 +82,7 @@ export class ControlledCanvas extends BaseCanvas {
 
   onMouseUp() {
     this.canvas.removeEventListener("mousemove", this.mouseMoveListener, false);
+    this.resetControls();
   }
 
   onMouseWheel(event) {
@@ -79,6 +109,18 @@ export class ControlledCanvas extends BaseCanvas {
     );
 
     this.renderScene();
+  }
+
+  onSceneElementSelected(elementId) {
+    this.controls.panning = false;
+    this.controls.elementMovement = true;
+    this.movingElementId = elementId;
+  }
+
+  resetControls() {
+    this.controls.panning = true;
+    this.controls.elementMovement = false;
+    this.movingElementId = null;
   }
 
   applyTransform() {

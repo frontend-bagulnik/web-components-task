@@ -1,6 +1,7 @@
 export const canvasEvents = {
   ZOOM_IN: "ZOOM_IN",
   ZOOM_OUT: "ZOOM_OUT",
-
+  MOUSE_DOWN: "MOUSE_DOWN",
+  MOVE_ELEMENT: "MOVE_ELEMENT",
   RENDER_SCENE: "RENDER",
 };

@@ -2,9 +2,9 @@ import { headerEvents } from "@widgets/AppHeader/model/events";
 import { addSceneElement } from "@entities/scene/lib/scene";
 import { Grid } from "@entities/grid/model/Grid";
 import { createRandomSvgPolygonData } from "../features/polygon/create";
-import { onPolygonDropped } from "../features/canvas/dropPolygon";
+import { onPolygonDropped } from "@features/canvas/dropPolygon";
 import { useBufferPolygons } from "./lib/hooks";
-import { canvasDomEvents } from "../entities/canvas/model/domEvents";
+import { canvasDomEvents } from "@entities/canvas/model/domEvents";
 
 const { getBufferPolygons, setBufferPolygons, removePolygonFromBuffer } =
   useBufferPolygons();
