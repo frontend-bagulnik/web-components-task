@@ -1,19 +1,25 @@
 import { headerEvents } from "@widgets/AppHeader/model/events";
-import { addSceneElement } from "@entities/scene/lib/scene";
 import { Grid } from "@entities/grid/model/Grid";
 import {
   createRandomSvgPolygonData,
   createSvgPolygonData,
 } from "@features/polygon/create";
 import { onPolygonDropped } from "@features/canvas/dropPolygon";
-import { useBufferPolygons } from "./lib/hooks";
+import { useBufferPolygons } from "./lib/hooks/useBufferPolygons";
 import { canvasDomEvents } from "@entities/canvas/model/domEvents";
 import { subscribe } from "@shared/lib/eventBus";
 import { canvasEvents } from "@shared/model/canvasEvents";
 import { bufferContainerEvents } from "@widgets/BufferContainer/model/events";
-import { getSceneElementById } from "@entities/scene/lib/scene";
-import { removeSceneElement } from "@entities/scene/lib/scene";
+import {
+  getSceneElementById,
+  removeSceneElement,
+  getSceneElements,
+  addSceneElement,
+} from "@entities/scene/lib/scene";
 import { publishEvent } from "@shared/lib/eventBus";
+import { useAppStorage } from "./lib/hooks/useAppStorage";
+import { loadSceneComponents } from "./lib/sceneLoader";
+import { componentTypes } from "../shared/model/componentTypes";
 
 const {
   getBufferPolygons,
@@ -21,6 +27,8 @@ const {
   addPolygonToBuffer,
   removePolygonFromBuffer,
 } = useBufferPolygons();
+
+const { loadAppData, saveAppData, clearAppData } = useAppStorage();
 
 export class App extends HTMLElement {
   constructor() {
@@ -39,6 +47,16 @@ export class App extends HTMLElement {
     });
 
     addSceneElement(grid);
+    const { bufferPolygons, scenePolygons } = loadAppData();
+
+    if (bufferPolygons) {
+      setBufferPolygons(bufferPolygons);
+      this.updateBuffer();
+    }
+
+    if (scenePolygons) {
+      loadSceneComponents(scenePolygons);
+    }
   }
 
   onPolygonDroppedOnCanvas({ detail }) {
@@ -88,12 +106,16 @@ export class App extends HTMLElement {
       setBufferPolygons(createRandomSvgPolygonData());
       this.updateBuffer();
     });
-    this.addEventListener(headerEvents.SAVE_CLICK, (e) => {
-      console.log(headerEvents.SAVE_CLICK);
-    });
-    this.addEventListener(headerEvents.CLEAR_CLICK, (e) => {
-      console.log(headerEvents.CLEAR_CLICK);
-    });
+
+    this.addEventListener(headerEvents.SAVE_CLICK, () =>
+      saveAppData(
+        getBufferPolygons(),
+        getSceneElements().filter((el) => el.getType() !== componentTypes.GRID),
+      ),
+    );
+
+    this.addEventListener(headerEvents.CLEAR_CLICK, clearAppData);
+
     this.addEventListener(
       canvasDomEvents.DROP_ELEMENT,
       this.onPolygonDroppedOnCanvas.bind(this),

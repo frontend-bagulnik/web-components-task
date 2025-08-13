@@ -17,7 +17,7 @@ class BufferContainer extends BaseBufferContainer {
 
   cancelExpectingElement() {
     this.expectedElementId = null;
-    this.isExpectingElement = true;
+    this.isExpectingElement = false;
   }
 
   onPolygonDropped() {

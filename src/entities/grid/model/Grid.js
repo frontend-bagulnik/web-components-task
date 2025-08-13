@@ -1,6 +1,7 @@
 import { BaseSceneElement } from "@shared/model/BaseSceneElement";
 import { subscribe } from "@shared/lib/eventBus";
 import { canvasEvents } from "@shared/model/canvasEvents";
+import { componentTypes } from "../../../shared/model/componentTypes";
 
 export class Grid extends BaseSceneElement {
   constructor({
@@ -13,7 +14,7 @@ export class Grid extends BaseSceneElement {
     textOffset = 25,
     color = "#000000",
   } = {}) {
-    super(id);
+    super(componentTypes.GRID, id);
 
     this.originOptions = { cellWidth, cellHeight };
     this.options = { lineWidth, cellWidth, cellHeight, offset, color };
