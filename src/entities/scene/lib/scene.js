@@ -1,4 +1,5 @@
 import { useScene } from "./hooks/useScene";
+import { useSceneListeners } from "./hooks/useSceneListeners";
 
 export const {
   addSceneElement,
@@ -6,3 +7,5 @@ export const {
   getSceneElements,
   getSceneElementById,
 } = useScene();
+
+useSceneListeners();

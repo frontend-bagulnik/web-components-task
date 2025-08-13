@@ -27,6 +27,13 @@ class PolygonSvg extends HTMLElement {
 
   connectedCallback() {
     this.innerHTML = this.render();
+    this.initListeners();
+  }
+
+  initListeners() {
+    this.querySelector("div")?.addEventListener("dragstart", (event) => {
+      event.dataTransfer.setData("text/plain", this.id);
+    });
   }
 
   render() {
