@@ -7,6 +7,8 @@ export const useBufferPolygons = () => {
 
   const getBufferPolygons = () => [...buffer.polygons];
 
+  const addPolygonToBuffer = (polygon) => buffer.polygons.push(polygon);
+
   const removePolygonFromBuffer = (polygonId) => {
     buffer.polygons = buffer.polygons.filter(({ id }) => id !== polygonId);
   };
@@ -14,6 +16,7 @@ export const useBufferPolygons = () => {
   return {
     getBufferPolygons,
     setBufferPolygons,
+    addPolygonToBuffer,
     removePolygonFromBuffer,
   };
 };

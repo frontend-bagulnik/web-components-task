@@ -12,12 +12,12 @@ export const createRandomSvgPolygonData = () => {
   return buffer.map(() => createSvgPolygonData());
 };
 
-export const createSvgPolygonData = () => {
+export const createSvgPolygonData = ({ points, id = uuidv4() } = {}) => {
   const { svgPolygonWidth: width, svgPolygonHeight: height } = polygonOptions;
 
   return {
-    id: uuidv4(),
-    points: createPolygonPoints(10, width, height),
+    id,
+    points: points || createPolygonPoints(10, width, height),
     options: {
       width,
       height,
